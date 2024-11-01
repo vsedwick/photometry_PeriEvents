@@ -25,6 +25,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+from functions.photo_nestedstats_funcs import make_folder
 
 s_bins = 1; fp_fps = 20; post_s = 10; pre_s = 5;
 
@@ -360,20 +361,6 @@ def zscores(avg_diary, sem_diary, fp_times, j, group_diary, zscore_path3):
 
 
     plt.close()
-
-def make_folder(x, project_home):
-
-    mode = 0o666
-    j=os.listdir(project_home)
-    if x not in j:
-        behavior_path=os.path.join(project_home, x)
-        os.mkdir(behavior_path, mode)
-    else:
-        behavior_paths=os.path.join(project_home, x)
-    behavior_paths=os.path.join(project_home, x)
-    return behavior_paths
-
-
 
 
 

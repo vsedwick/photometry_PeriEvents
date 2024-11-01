@@ -1,5 +1,5 @@
 
-configuration_file = r'C:\Users\sedwi\Desktop\Portfolio\Thesis_Research (python)\Photometry\config.yaml'
+configuration_file = r'../config/config.yaml'
 
 # NOTE PROCEED WITH CAUTION CHANGING ANYTHING AFTER THIS LINE
 # MAKE SURE ALL PACKAGES ARE INSTALLED WITH 'pip install [package]'

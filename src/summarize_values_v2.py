@@ -1,5 +1,6 @@
 
-configuration_file = r'C:\Users\sedwi\Desktop\Portfolio\Thesis_Research (python)\Photometry\config.yaml'
+configuration_file = r'../config/config.yaml'
+
 
 from batch_photocode_v2 import make_folder, load_config, AnalysisParameters
 import pandas as pd

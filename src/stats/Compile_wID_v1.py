@@ -1,7 +1,7 @@
 import pandas as pd
-import numpy as np
 import os
 import openpyxl
+
 
 compile_directory = r"E:\Photometry-Fall2022\Final Analysis\REANALYSIS_zscore_nolimit\Virgin Females"
 # subjects = ['Virgin Males', 'Virgin Females', 'Mated Males', 'Mated Females'] #As written in folders

@@ -3,7 +3,7 @@ import statsmodels.formula.api as smf
 from statsmodels.formula.api import mixedlm
 import os
 from statsmodels.stats.anova import anova_lm
-from statsmodels.stats.multicomp import pairwise_tukeyhsd, MultiComparison
+from statsmodels.stats.multicomp import MultiComparison
 from scipy.stats import ttest_ind
 import numpy as np
 
@@ -30,17 +30,44 @@ def format_floats(df, decimal_places):
             df[col] = df[col].apply(lambda x: f'{x:.{decimal_places}f}')
     return df
 
-def make_folder(x, project_home):
+def make_folder(new_folder, parent_directory):
+    """
+    Creates new folders and or sets the directory. 
+
+    Args:
+        parent_directory (str): The parent directory for the new folder.
+        new_folder (str): The name of the new fodler to be created.
+
+    Returns:
+        full_path (str): The new directory where the folder was created
+    
+    Raises: 
+        FileNotFoundError: If the specified parent directory does not exist.
+        PermissionError: If the directory is not writable or the folder cannot be created.
+
+    """
 
     mode = 0o666
-    j=os.listdir(project_home)
-    if x not in j:
-        behavior_path=os.path.join(project_home, x)
-        os.mkdir(behavior_path, mode)
-    else:
-        behavior_paths=os.path.join(project_home, x)
-    behavior_paths=os.path.join(project_home, x)
-    return behavior_paths
+
+    full_path = os.path.join(parent_directory, new_folder)
+
+    #check if parent directory exists
+    if not os.path.exists(parent_directory):
+        raise FileNotFoundError(f"Parent directory '{parent_directory}' does not exist.")
+    
+    #checks if user has permission to write to that directory
+    if not os.access(parent_directory, os.W_OK):
+        raise PermissionError(f"Write permission denied for directory '{parent_directory}.")
+    
+    #Creates the folder if it doesnt exists
+    if not os.path.exists(full_path):
+        try:
+            os.mkdir(full_path, mode)
+        except OSError:
+            raise PermissionError(f"Failed to create directory {full_path}. Check permissions: {OSError}")
+
+
+    return full_path
 
 def nested_anova(df_long):
     pd.set_option('display.float_format', lambda x: '%.6f' % x)
