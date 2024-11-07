@@ -1,33 +1,89 @@
-# Fiber Photometry Analysis Scripts
 
-This collection of scripts began my coding journey as my lab did not have a sufficient analysis pipeline for the bulk of data we needed to analyze. These were some of the earliest and most complex scripts I have written. 
+# Photometry Data Analysis and Visualization Repository
 
-In present day, I am actively cleaning the scripts to improve readibility and organization. I am addressing issues such as verbose functions and redundancies and adding 
-descriptive docstrings. The goal is to publish this collection as an open source analysis program to aid researchers in their work.
+This repository contains Python scripts for analyzing and visualizing photometry data. The scripts are organized to streamline data processing, statistical summarization, and quick visualization of photometry signals, allowing researchers to efficiently derive insights from their data. Additional scripts are included to perform nested statistical tests, enabling a more robust and comprehensive analysis.
 
-The benefit to this program is that peri-event extraction is automatic significantly reducing user-bias and ensuring uniformity and organization across samples. Additionally, it is capable of batch processing any number of recording trials with minimal, prompted supervision, and pools relevant data from all of the samples into a single csv file.
+## Table of Contents
+- [Installation](#installation)
+- [Required Folder Structure](#required-folder-structure)
+- [Key Features](#key-features)
+- [Usage](#usage)
 
-## Description of Program
-### Photocode scripts
-The photocode scripts perform the bulk of the data cleaning and data extraction. **"[batch_photocode_vs.py](https://github.com/vsedwick/photometry_PeriEvents/blob/master/src/batch_photocode_v2.py)"** is the most recent version and is still in the process of being updated whereas "combined-photocode-05052024.py" and other variations are the versions I worked on and utilized upwards of 5 years in my lab. All extractions are nestled neatly into a folder called "Behaviors" and are organized by the peri-event they belong to. Approximately 8 parameters are extracted per sample, per event. These values can be accessed or re-analyzed at anytime without having to re-run this 'photocode'.
+## Installation
 
-### Summary Scripts
-The summary script [summarize_values_v2.py](https://github.com/vsedwick/photometry_PeriEvents/blob/master/src/summarize_values_v2.py) processes all extracted peri-event parameters from the "Behavior" folder and calculates relevant metrics for each one. These metrics are saved as individual CSV files, categorized by the type of calculation performed (e.g., Δ area under the curve, magnitude change, z-score, etc.). Each CSV includes the sample ID and the calculated value for each observed event. Additionally, averaged z-score plots with shaded standard error of the mean (SEM) are generated for each event, providing an immediate visualization of the overall signal response.
+To set up the environment for running these photometry data analysis scripts, start by installing the required dependencies. Ensure you have Python installed, then navigate to the repository directory and run:
 
-### Statistical Scripts
-- VS_Photo_LMM_betweengroups_BATCH.py
+```bash
+pip install -r requirements.txt
+```
 
-### Visualization Scripts
-- zscoreFigures_andBins_change colors.py
-- pretty_picture_03253034.py
+This command installs all necessary packages, including:
+- `pandas` (2.0.3) for data manipulation
+- `numpy` (1.24.3) for numerical operations
+- `matplotlib` (3.8.2) and `seaborn` (0.13.2) for data visualization
+- `scipy` (1.11.1) and `statsmodels` (0.14.0) for statistical analysis
+- `PyYAML` (6.0.1) for configuration management
 
-### Utility Scripts
-- Compile_wID.py
+These dependencies are essential for processing, summarizing, and visualizing photometry data and ensuring compatibility across the scripts.
 
-## Instructions
-- To run the batch_photocode, the compatible data can be found on Google Drive:
-https://drive.google.com/drive/folders/1JRW4vdPXH9-fDm-3SlwxG2M2b4yX3qcl?usp=sharing
+## Required Folder Structure
 
-- Set the base folder as the project directory in the configuration file ("config.yaml"). Choose one of the samples to use as the example behavior file.
+For the scripts to function correctly, organize your data files as follows:
 
-- After running the photocode, "summary_values_05052024.py" will perform a series of calculations to output plottable values into csv sheets. [This script is currently compatible with the config file, but it will be soon.
+```
+root/
+¦   
++---Virgin Females                             # Defined name for analysis group
+    ¦   
+    +---1                                      # Sample ID 1
+    ¦       1_split2022-09-20T14_28_47.CSV     # Photometry File
+    ¦       Raw data-MeP-CRFR2photo_pupblock1-Trial 1 (1).xlsx   # Behavior File
+    ¦       
+    +---21                                     # Sample ID 21
+    ¦       1_split2022-09-28T14_34_01.CSV     # Photometry File
+    ¦       Raw data-Pup Block 2-Trial 1 (2).xlsx                 # Behavior File
+    ¦               
+    +---Archive                                # Folder to store samples you wish to ignore
+    +---Videos                                 # Folder to store acquisition videos
+```
+
+### Folder Details
+- **Group Folder** (e.g., "Virgin Females"): Each analysis group should have its own folder with a descriptive name.
+- **Sample Folders** (e.g., "1", "21"): Within each group, create a subfolder for each sample. Name each folder by the sample ID.
+- **File Naming**:
+  - Place the photometry data file (`.CSV`) and the behavior data file (`.xlsx`) within each sample folder.
+  - The code expects only one `.CSV` and one `.xlsx` file per sample folder to avoid conflicts.
+  - Additional files or folders can exist in the sample folders, but they should not have a `.CSV` or `.xlsx` extension.
+- **Optional Folders**:
+  - **Archive**: Use this folder to store samples you wish to exclude from analysis.
+  - **Videos**: Store acquisition videos here if they’re part of the analysis group.
+
+## Key Features
+
+This repository provides a full suite of tools for processing, summarizing, and visualizing photometry data, with each script designed to facilitate a specific step in the workflow:
+
+- **Event-Based Signal Extraction and Processing**
+  - `batch_photocode_v2.py` extracts specific portions of the photometry signal aligned with the onset of behavioral events, based on time intervals defined in `config.yaml`.
+  - Fits, smooths, and normalizes the photometric signal, providing three trace options for analysis.
+  - Outputs processed signal segments tailored for further statistical analysis, accommodating any number of events with customizable durations.
+
+- **Comprehensive Summary Statistics**
+  - `summarize_values_v2.py` calculates essential metrics:
+    - Percentage change
+    - Z-scores
+    - Area under the curve (AUC)
+  - Provides both individual and averaged summaries, offering a thorough quantitative overview.
+
+- **Clear, Annotated Visualizations**
+  - `quickplots-stats_v2.py` generates publication-ready plots with:
+    - Automated metric labels
+    - Statistical annotations to highlight significant findings
+  - Enables easy, intuitive interpretation of complex data.
+
+- **Advanced Statistical Analysis**
+  - Additional scripts in the `stats` folder perform complex analyses, including:
+    - **Nested statistical models** (e.g., mixed-effects models with fixed and random effects)
+    - **Multi-comparison tests** for group comparisons
+  - Custom color schemes and data compilation tools enhance flexibility, making it easy to tailor analyses to specific research questions.
+
+These features together create an efficient, end-to-end workflow for photometry data, from raw processing to in-depth statistical analysis and visual presentation.
