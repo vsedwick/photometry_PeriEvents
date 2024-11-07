@@ -4,9 +4,7 @@
 
 Directory_Information:
   #Parent folder where your data folders are located (It is highly suggested to separate by groups)
-  project_home: "C:/Users/sedwi/Documents/Labmeeting_test_files/Mated_females"
-  #Provide an example behavior file that is representative of those in your data folders. It is important that it includes the relavent behaviors.
-  example_behavior_file: "c:/Users/sedwi/Documents/Labmeeting_test_files/Mated_females/26/Raw data-Mated Pup Exposure-Trial    27.xlsx"
+  project_home: /photo_files_for_portfolio/Photometry
 
 Acquisition_Information: 
   behaviorvideo_fps: 30
@@ -30,60 +28,65 @@ Acquisition_Information:
   #If full trace is 'no', how much time would you like to pad around your start parameters? If not applicable, leave blank.
   #If selected time is more than what is available, the program will use the maximum value possible.
   time_from_start_s: 120
-  time_from_end_s: 30
+  time_from_end_s: 120
 
 Behavior_Parameters:
   #In the file containing the behavior scores, what row contains your behavior names? 
   #(If the row is not consistent or incorrect, you will be prompted during analysis to provide a new row number)
   behavior_row: 35
-  start_parameter: start
+  start_parameter: Event 1
   #what is the minimal accepted duration? If not applicable, input 0?
   minimum_accepted_duration_s: 0.1
   #Is a control trial included in your traces? If yes, ensure you have a minimum of 4 start markers, otherwise
   #the control and trial portion will be analyzed together.
-  use_control_trial: no
+  use_control_trial: yes
   #Would you like to limit how many peri-events are extracted per behavior (e.g. if 5, the most prominient 5 'sniffing', 'grooming' etc events will be extracted)? 
   #Useful to prevent oversampling. If no, input 0.
   limit_perievent_extraction: 0
   
   #Define point events if there are any.
   point_events:
-    - start
-    - Approach
-    - Bite
+    - Event 1
+    - Event 18
+    - Event 7
 
   Behaviors_to_Score: 
-    - Carrying
-    - Attack
-    - Aggressive groom
-    - Rearing
-    - Digging
-    - Grooming
-    - Sniff
-    - Approach
+    - Event 6
+    - Event 8
+    - Event 9
+    - Event 10
+    - Event 15
+    - Event 16
+    - Event 17
+    - Event 18
+    - Event 19
 
   Compile_behaviors: yes
   Behavior_Groupings:
   #Ensure these are spelled correctly
-    "Stimulus Interaction": 
-      - Sniffing
-      - Grooming
-      - Aggressive groom
-      - Attack
+    "Group 1": #Rename to whatever youd like
+      - Event 17
+      - Event 16
+      - Event 9
+      - Event 8
+      - Event 6
+      - Event 19
       - 
       - 
       - 
-    "Stimulus Contact":
-      - Grooming
-      - Nudge
+    "Group 2": #Rename to whatever youd like
+      - Event 16
+      - Event 19
+      - Event 9
+      - Event 6
+      - Event 8
       - 
-      - 
-    "Non-Stimulus Behaviors":
-      - Rearing
-      - Digging
+    "Group 3": #Rename to whatever youd like
+      - Event 10
+      - Event 15
 
     #Feel free to add custom groupings. Rename and follow the same format.
-    <custom1>:
+    "<custom1>":
       - 
     <custom2>:
       - 

@@ -1,5 +1,5 @@
 
-configuration_file = r'../config/config.yaml'
+configuration_file = r'../config.yaml'
 
 
 from batch_photocode_v2 import make_folder, load_config, AnalysisParameters
@@ -144,7 +144,6 @@ class GrabEventValues:
 class ZscorenPlot:
     def __init__(self, config):
         self.config = config
-        self.zscore_diary = []
         self.baseline_length = int(self.config.pre_s * self.config.photo_fps)
         self.event_length = int(self.config.post_s * self.config.photo_fps)
         self.zbase_avg = []
@@ -155,21 +154,25 @@ class ZscorenPlot:
         self.save_path = make_folder('zscore_figs', config.subject_path)
 
     def calculate_values(self, baseline_matrix, event_matrix, length):
+
+        zscore_diary = []
         try:
             for base, event in zip(np.array(baseline_matrix, dtype = float), np.array(event_matrix, dtype = float)):
                 means = np.average(base[-length : ])
                 stdd = np.std(base[-length : ])
+
+                full_array = np.concatenate((base[-length : ], event))
                 #baseline part
-                zscore = [(i - means) / stdd for i in base[-length : ]]
-                zscore.extend([(i - means) / stdd for i in event])
-                self.zscore_diary.append(zscore)
+                zscore = [(i - means) / stdd for i in full_array]
+                # zscore.extend([(i - means) / stdd for i in event])
+                zscore_diary.append(zscore)
 
         except IndexError:
             print("Likely a length mismatch, please check Pre_s and Post_s in configuration settings")
         except ValueError:
             print("Error")
 
-        return self.zscore_diary
+        return zscore_diary
     
     def average_zscores(self, listOlists, length):
         # Check if elements in listOlists are iterable
@@ -258,9 +261,8 @@ def load_zscore(dictionaries, event, unloader, zscore):
     #Zscores
     #Unequal length baseline and event (e.g. 5s baseline, 10s event)
     zscore_pre_post = zscore.calculate_values(unloader.peri_baseline_matrix, unloader.peri_event_matrix, zscore.baseline_length)
-
     zscore_by_trial = zscore.calculate_values(unloader.avg_matrix_base, unloader.avg_matrix_event, zscore.baseline_length)#NOTE for plotting
-
+    
     zbase, zevent = zscore.average_zscores(zscore_pre_post, zscore.baseline_length)
     indv_diff = [ze - zb for zb, ze in zip(zbase, zevent)]
     dictionaries.zscore_ind = dictionaries.load_dict_diffs(dictionaries.zscore_ind, event, indv_diff, unloader.id_list) 

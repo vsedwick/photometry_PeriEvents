@@ -1,5 +1,5 @@
 
-configuration_file = r'../config/config.yaml'
+configuration_file = r'../config.yaml'
 
 # NOTE PROCEED WITH CAUTION CHANGING ANYTHING AFTER THIS LINE
 # MAKE SURE ALL PACKAGES ARE INSTALLED WITH 'pip install [package]'
@@ -16,7 +16,7 @@ import pandas as pd
 import sys
 from pathlib import Path
 import yaml
-from utils.logger import logger
+# from utils.logger import logger
 import matplotlib.colors as mcolors
 
 
@@ -365,9 +365,13 @@ class Clean_and_ProcessFiles:
                 self.start_times.append(start_time_placements[0]); self.end_times.append(start_time_placements[1])
                 self.start_times.append(start_time_placements[2]); self.end_times.append(start_time_placements[3])
             else:
-                raise KeyError("'use_control_trial' is set to 'on'. There is not enough 'start' markers.")
+                print("'use_control_trial' is set to 'on'. There is not enough 'start' markers.")
+                self.start_times.append(start_time_placements[0]); self.end_times.append(start_time_placements[-1])
         elif not self.config.controls: 
-            self.start_times.append(start_time_placements[0]); self.end_times.append(start_time_placements[-1])
+            if len(start_time_placements) == 4:
+                self.start_times.append(start_time_placements[2]); self.end_times.append(start_time_placements[3])
+            else:
+                self.start_times.append(start_time_placements[0]); self.end_times.append(start_time_placements[-1])
 
         return self.start_times, self.end_times
 
@@ -530,7 +534,6 @@ class SmoothPlotnValidate_Photo:
         self.config = config
         self.fit1 = []
         self.fit3 = []
-        self.remove_isosbestic = False
         self.trace_diary = None
         self.photo_frames = []
         self.proper_assignment = True
@@ -573,15 +576,17 @@ class SmoothPlotnValidate_Photo:
         return np.concatenate((start, out0, stop))
 
     #@logger("log.txt")
-    def normalize_and_zscore_trace(self, photo_470):
+    def normalize_and_zscore_trace(self, photo_470, remove_isosbestic = False):
 
         fitted_trace = np.array((photo_470-self.fit3)/self.fit3)
 
-        if self.remove_isosbestic or fitted_trace.all() == 0:
+        if remove_isosbestic:
             print("Removing isosbestic signal")
             smoothed_and_fitted_trace = self.smooth(photo_470, 59)
+
         else:
             smoothed_and_fitted_trace = self.smooth(fitted_trace, 59)
+
         self.normalized_trace = smoothed_and_fitted_trace - smoothed_and_fitted_trace.min()
         
         u = np.mean(self.normalized_trace)
@@ -631,7 +636,8 @@ class SmoothPlotnValidate_Photo:
 
         # Adjust spacing between subplots
         plt.subplots_adjust(hspace=0.5)  # Increase hspace for more vertical space between plots
-        plt.savefig(f"{self.config.subject_path}\{self.config.trial_id}_fitting.png")
+        fitting_save = make_folder("Fittings", self.config.project_home)
+        plt.savefig(f"{fitting_save}\{self.config.trial_id}_fitting.png")
         
         if not self.config.silent_mode:
             plt.show(block=False)
@@ -654,16 +660,16 @@ class SmoothPlotnValidate_Photo:
         trace_names = list(trace_diary.keys())
 
         #In case previous led correction was not successful
-        self.plot_photo_fittings(trace_diary[trace_names[0]])
+        self.plot_photo_fittings(trace_diary[trace_names[2]])
         if not self.config.silent_mode:
             while True:
                 proper_led_assignment = input("Are 470 and 410 LEDs properly assigned? ('y'/ENTER or 'n'; input 's' to skip trial) \n NOTE: can silence this prompt by turning Silent mode on: ")
                 plt.close()
                 if proper_led_assignment.lower() in ['n', 'no']:
                     self.photo_410, self.photo_470 = photo_470, photo_410
-                    self.fit_that_curve(photo_470, photo_410)
-                    trace_diary = self.normalize_and_zscore_trace(photo_470)
-                    self.plot_photo_fittings(trace_diary[trace_names[0]])
+                    self.fit_that_curve(self.photo_470, self.photo_410)
+                    trace_diary = self.normalize_and_zscore_trace(self.photo_470)
+                    self.plot_photo_fittings(trace_diary[trace_names[2]])
                     break
 
                 if proper_led_assignment.lower() == 's':
@@ -678,14 +684,14 @@ class SmoothPlotnValidate_Photo:
                 good_isosbestic = input("Do you need to remove the isosbestic control signal? ('y'/'n'; press ENTER to skip): ")
                 plt.close()
                 if good_isosbestic.lower() in ['y', 'yes']: 
-                    self.remove_isocesctic = True
-                    trace_diary = self.normalize_and_zscore_trace(self.photo_470)
+                    trace_diary = self.normalize_and_zscore_trace(self.photo_470, remove_isosbestic = True)
+                    self.plot_photo_fittings(trace_diary[trace_names[2]])
                     break
                 else:
                     break       
-        
+        self.plot_photo_fittings(trace_diary[trace_names[2]])
         #get peak positions
-        self.identify_peak_positions(trace_diary[trace_names[0]])
+        self.identify_peak_positions(trace_diary[trace_names[2]])
 
         return trace_diary 
 
@@ -722,36 +728,31 @@ class Restructure_Behavior_Data:
         return self.event_dictionary
     
     def define_zoned_behaviors(self, event_dictionary):
+
+        zone_array = np.array(self.behav_raw[self.zone])
+        # print(zone_array)
+        old_dict = event_dictionary.copy()
         if self.zone in self.events_to_extract:
-            for event in self.events_to_extract:
-                if event in [self.zone, self.config.start_parameter]:
+            for event in old_dict.keys():
+                event_array = np.array(old_dict[event])
+                if event in [self.zone, self.config.start_parameter] or np.array(event_array).any() != 1:
                     continue
-                in_zone = []; out_of_zone = []
-                for event_value, zone_value in zip(self.behav_raw[event_value], self.behav_raw[zone_value]):
-                    if event_value == 1 and zone_value == 1:
-                        out_of_zone.append(0)
-                        in_zone.append(1)
-                    if event_value == 1 and zone_value == 0:
-                        out_of_zone.append(1)
-                        in_zone.append(0)
-                    if (event_value == 0 and zone_value == 0) or (event_value == 0 and zone_value == 1):
-                        out_of_zone.append(0)
-                        in_zone.append(0)                    
-                in_zone_array = np.array(in_zone, dtype = bool)
-                out_zone_array = np.array(out_of_zone, dtype = bool)
+                else:
+                    in_zone_array = np.array([max(e + z - 1, 0) for e, z in zip(event_array, zone_array)], dtype = bool); 
+                    out_zone_array = np.array([max(e - z, 0) for e, z in zip(event_array, zone_array)], dtype = bool)
 
-                in_zone_label = f"{event}_InZone"
-                out_zone_label = f"{event}_OutZone" 
 
-                self.events_to_extract.append([in_zone_label]); self.events_to_extract.append([out_zone_label])
+                    in_zone_label = f"{event}_InZone"
+                    out_zone_label = f"{event}_OutZone" 
 
-                event_dictionary.update({f"{in_zone_label}": in_zone_array,
-                                        f"{out_zone_label}": out_zone_array})
-                self.event_dictionary = event_dictionary
+                    event_dictionary.update({f"{in_zone_label}": in_zone_array,
+                                            f"{out_zone_label}": out_zone_array})
+                    
+            self.event_dictionary = event_dictionary
         else:
             raise ValueError(f"{self.config.zone} was not present in the 'Event extraction list'. Please be sure to include it when choosing events to analyze.")
                 
-        return self.event_dictonary
+        return self.event_dictionary
 
     #@logger("log.txt")
     def compile_behavior_groups(self):
@@ -774,7 +775,7 @@ class Restructure_Behavior_Data:
         if self.Groups:
             self.event_dictionary = self.compile_behavior_groups()
         if self.add_zone:
-            self.event_dictionary = self.define_zoned_behaviors()        
+            self.event_dictionary = self.define_zoned_behaviors(self.event_dictionary)        
         return self.event_dictionary
             
 class ExtractbyEvent:
@@ -1073,6 +1074,12 @@ def make_folder(new_folder, parent_directory):
 def exp2(x, a, b, c, d):
     return a*exp(b*x) + c*exp(d*x)
 
+def save_fitted_trace(trace, path1, id, fps):
+    path2 = make_folder("Fittings", path1)
+    df = pd.DataFrame({"Time": get_time_array(trace, fps),
+          "zF": trace})
+    df.to_csv(f"{path2}/{id}_zscore_trace.csv")
+
 #@logger("log.txt")
 def main(configuration_file):
     config = AnalysisParameters(load_config(configuration_file))
@@ -1085,7 +1092,7 @@ def main(configuration_file):
     for subject_trial_id in analysis_folders:
         #Exclude processed value or video folders that may be in the project home directory
         config.trial_id = subject_trial_id
-        exclude_folder = ['Behaviors', 'Videos', 'Summary', 'Archive']
+        exclude_folder = ['Behaviors', 'Videos', 'Summary', 'Archive', 'Fittings']
         if not os.path.isdir(os.path.join(config.project_home, subject_trial_id)) or subject_trial_id in exclude_folder:
             continue
         else:
@@ -1133,8 +1140,10 @@ def main(configuration_file):
                         results = extraction.get_values()
                         save_variables(results, config, event_path)
                 # plot_photometry_ethogram(config, event_dictionary[event_name], trace, time_markers)
-                        if trace == list(trace_diary.keys())[0]:
+                        if trace == list(trace_diary.keys())[2]:
                             extraction.rep_plot_overlap()
+                            save_fitted_trace(trace_diary[trace], config.project_home, config.trial_id, config.photo_fps)
+
 
     print(f"Extraction complete. Peri-events can be found in the {event_save_path} folder")
 
