@@ -238,34 +238,40 @@ class Clean_and_ProcessFiles:
         self.behaviors = []
 
     #@logger("log.txt")
-    def open_files(self):
-        self.files_to_load = os.listdir(self.subject_trial_path)
-        print(f'Analyzing ID: {self.subject_trial_id}...'); print(f"{self.subject_trial_id}. Opening files")
-        if len(self.files_to_load)>= 2:
-            for i in self.files_to_load:
-                try:
-                    if i.lower().endswith('.csv'):
-                        self.photo_raw = pd.read_csv(Path(os.path.join(self.subject_trial_path, i)))
-                    if 'Raw data' in i and i.endswith('.xlsx') and '$' not in i:
-                        self.behav_raw = pd.read_excel(Path(os.path.join(self.subject_trial_path, i)), header = [self.config.behavior_row-1], skiprows = [self.config.behavior_row])
-                        check_header = list(self.behav_raw.head())
-                        #specific to Noldus
-                        if not check_header[0] == 'Trial time':
-                            print("The provided behavior row is incorrect, finding the correct one...")
-                            self.behav_raw = self.find_header_row(Path(os.path.join(self.subject_trial_path, i)))
+    def open_photo(self, file_list):
+        for i in file_list:
+            try:
+                
+                if i.lower().endswith('.csv'):
+                    self.photo_raw = pd.read_csv(Path(os.path.join(self.subject_trial_path, i)))
+                    if self.photo_raw is None:
+                        print("photo_raw is None")    
+            except (ValueError, FileNotFoundError, pd.errors.EmptyDataError):           
+                print(f"Unable to open file: {i}; skipping trial {self.subject_trial_id}")
+                self.config.report.append({self.subject_trial_id})
+                return None
+        return self.photo_raw
 
-                except (ValueError, FileNotFoundError, pd.errors.EmptyDataError):           
-                    print(f"Unable to open file: {i}; skipping trial {self.subject_trial_id}")
-                    self.config.report.append({self.subject_trial_id})
+    def open_behav(self, file_list):
+        for i in file_list:
+            try:
+                if 'Raw data' in i and i.endswith('.xlsx') and '$' not in i:
+                    self.behav_raw = pd.read_excel(Path(os.path.join(self.subject_trial_path, i)), header = [self.config.behavior_row-1], skiprows = [self.config.behavior_row])
+                    check_header = list(self.behav_raw.head())
+                    #specific to Noldus
+                    if not check_header[0] == 'Trial time':
+                        print("The provided behavior row is incorrect, finding the correct one...")
+                        self.behav_raw = self.find_header_row(Path(os.path.join(self.subject_trial_path, i)))
+                        print(list(self.behav_raw.head()))
                     
-                    return
-        else:
-            self.config.report.append(self.subject_trial_id)
-            print("Data not present. Skipping trial...")
+            except (ValueError, FileNotFoundError, pd.errors.EmptyDataError):           
+                print(f"Unable to open file: {i}; skipping trial {self.subject_trial_id}")
+                self.config.report.append({self.subject_trial_id})
+                return None
+            
+        return self.behav_raw
 
-        return self.photo_raw, self.behav_raw
-    
-    #@logger("log.txt")
+      #@logger("log.txt")
     def find_header_row(self, file):
         df = pd.read_excel(file, header = None)
         
@@ -357,8 +363,14 @@ class Clean_and_ProcessFiles:
             start_time_array = np.array(behav_raw[self.config.start_parameter])
             start_time_placements = [int(i) for i in range(len(start_time_array)) if start_time_array[i] == 1]
         except ValueError:
-            print("The start parameter is not indicated for this subject")
+            print(f"The start parameter is not indicated for this subject, analyzing full trace: {self.subject_trial_id}")
             self.config.report.append(self.subject_trial_id)
+            
+
+        if len(start_time_placements) < 2:
+            print(f"Unable to determine trial start time, Analyzing full trace: {self.subject_trial_id}.")
+            self.start_times.append(0); self.end_times.append(len(start_time_array))
+            return self.start_times, self.end_times
         # try:
         if self.config.controls:
             if len(start_time_placements) == 4:
@@ -490,11 +502,40 @@ class Clean_and_ProcessFiles:
 
     #@logger("log.txt")
     def process_files(self):
-            self.open_files()
+        
+        #get file list
+        self.files_to_load = os.listdir(self.subject_trial_path)
+        print(self.subject_trial_id, self.files_to_load)
+
+        #check if required data extensions exist
+        has_csv = any(i.lower().endswith('.csv') for i in self.files_to_load)
+        has_xlsx = any(i.lower().endswith('.xlsx') for i in self.files_to_load)
+
+        if not has_csv and not has_xlsx:
+            print(f"{self.subject_trial_id} Required data not present. Skipping trial...")
+            self.config.report.append(self.subject_trial_id)
+            return None, None, None, None
+        else:
+      
+            try:
+                photo_file = self.open_photo(self.files_to_load)
+                behav_file = self.open_behav(self.files_to_load)
+                if photo_file is None or behav_file is None:
+                    return None, None, None, None 
+                else:
+                    print(photo_file)
+            except TypeError:
+                print(f"{self.subject_trial_id} is missing a file. Skipping trial...")
+                self.config.report.append(self.subject_trial_id)
+                return None, None, None, None
+
+            print(f'Analyzing ID: {self.subject_trial_id}...'); print(f"{self.subject_trial_id}. Opening files") 
+
             self.split_behavior_values()
 
             if not self.validate_files():
-                return False
+                print("Files Invalid")
+                return None, None, None, None 
             else:
                 self.split_photometry_values()
 
@@ -1100,6 +1141,9 @@ def main(configuration_file):
                       
             processor = Clean_and_ProcessFiles(config); 
             photo_470, photo_410, events_to_extract, behav_raw_df = processor.process_files()
+            print("Photo 470", photo_470)
+            if photo_470 is None:
+                continue
             
             config.subject_path = processor.subject_trial_path
             
@@ -1146,7 +1190,7 @@ def main(configuration_file):
 
 
     print(f"Extraction complete. Peri-events can be found in the {event_save_path} folder")
-
+    print('\n', f"Trials not analyzed: {config.report}")
 if __name__ == "__main__": 
     if len(sys.argv) > 1:
         main(sys.argv[1])
