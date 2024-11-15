@@ -53,6 +53,11 @@ root/
     - A .CSV photometry data file
     - A .xlsx behavior data file
     - Optional files should not end in .CSV or .xlsx to avoid conflicts.
+
+![***Acceptable file formats***](images/acceptable_input.png)
+
+    Files should not need to be edited as long as the columns pictures or highlighted are present.
+
 - **Optional Folders**:
     - **Archive**: Store samples to be excluded from analysis.
     - **Videos**: Store acquisition videos if relevant.
@@ -61,8 +66,8 @@ root/
 
 This repository provides tools for photometry data analysis, from event-based signal extraction to advanced statistical visualization. Key scripts include:
 
-- **batch_photocode_v2.py**: Processes photometry data by aligning it with behavioral events.
-- **summarize_values_v2.py**: Generates summarized statistics for the aligned data.
+- **batch_photocode_v2.py**: Processes extract photometry aligned with behavioral events.
+- **summarize_values_v2.py**: Generates summarized values for the extracted data.
 - **quickplots-stats_v2.py**: Quickly visualizes summarized data with statistical annotations.
 
 ## Configuration Settings
@@ -72,13 +77,20 @@ The configuration file (`config.yaml`) in the project root directory manages key
 **Configuration Snippet Example**
 
 ```yaml
-start_behavior: "event_start"       # Marks the start of behavioral events to align
-control_behavior: "control_start"   # Defines baseline control events
-baseline_window: 30                 # Specifies baseline time (seconds)
-event_window: 60                    # Specifies event time (seconds)
+Directory_Information:
+  #Parent folder where your data folders are located (It is highly suggested to separate by groups)
+  project_home: "/example_data"                            #location where trace folder are stored
+
+Acquisition_Information: 
+  behaviorvideo_fps: 30                                    #frames per second of the behavior video
+  photometry_fps: 20                                       #frames per second of photometric acquisition
+  
+  #How many seconds do you want to analyze for peri-events?
+  peri-baseline_seconds: 5                                 #will extract x seconds before the event onset
+  peri-event_seconds: 10                                   #will extract x seconds after the event onset
 ```
 
-Use `baseline_window` and `event_window` to adjust how data segments are extracted for baseline and event time frames.
+Use `peri-baseline_seconds` and `peri-event_seconds` to adjust how data segments are extracted for baseline and event time frames.
 
 ## Quickstart
 
@@ -96,8 +108,11 @@ Replace `batch_photocode_v2.py` with other script names (e.g., `summarize_values
 The `batch_photocode` script processes photometry traces by normalizing and aligning them with behavioral events, enabling precise analysis of neural responses associated with specific behaviors.
 
 - **Experiment Setup**: Fiber photometry records the 470 nm experimental signal and the 410 nm isosbestic control signal. The script removes motion artifacts by normalizing the 470 nm trace to the 410 nm signal.
+![***Fitting 470 signal to Isosbesctic signal***](images/full_fit.png)
 
 - **Behavioral Alignment and Data Extraction**: Aligned traces are segmented by behavior (e.g., sniffing, grooming), with each segment saved in folders organized by behavior type. Additionally, alignment images for each event are generated for easy reference.
+
+![***Event Alignment***](images/Event%2017_during_7_ROI%20example.png)
 
 ### 2. summarize_values
 
