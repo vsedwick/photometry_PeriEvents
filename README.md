@@ -56,8 +56,6 @@ root/
 
 ![***Acceptable file formats***](images/acceptable_input.png)
 
-    Files should not need to be edited as long as the columns pictures or highlighted are present.
-
 - **Optional Folders**:
     - **Archive**: Store samples to be excluded from analysis.
     - **Videos**: Store acquisition videos if relevant.
@@ -133,6 +131,9 @@ The `quickplots-stats_v2.py` script provides a quick overview of data from `summ
     - Paired T-Test Example
     - One-Sample T-Test Example
 
+![example_paired_ttest_out](images/Indv%20Raw%20Means_during__Zscore_trace.tif)
+
+![example one sample ttest](images/Indv%20Raw%20Means%20Differences_during__Zscore_trace.tif)
 ### 4. Advanced Statistical Analysis
 
 For experiments involving multiple sessions, `photo_nestedstats.py` and `Compile_wID_v1.py` enable complex statistical analyses. The `photo_nestedstats.py` script supports nested ANOVA and mixed-effects models:
