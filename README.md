@@ -131,9 +131,9 @@ The `quickplots-stats_v2.py` script provides a quick overview of data from `summ
     - Paired T-Test Example
     - One-Sample T-Test Example
 
-![example_paired_ttest_out](images/Indv%20Raw%20Means_during__Zscore_trace.tif)
+![example_paired_ttest_out](images/Indv%20Raw%20Means_during__Zscore_trace.jpg)
 
-![example one sample ttest](images/Indv%20Raw%20Means%20Differences_during__Zscore_trace.png)
+![example one sample ttest](images/Indv%20Raw%20Means%20Differences_during__Zscore_trace.jpg)
 
 ### 4. Advanced Statistical Analysis
 
