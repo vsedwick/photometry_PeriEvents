@@ -1,89 +1,156 @@
 
 # Photometry Data Analysis and Visualization Repository
 
-This repository contains Python scripts for analyzing and visualizing photometry data. The scripts are organized to streamline data processing, statistical summarization, and quick visualization of photometry signals, allowing researchers to efficiently derive insights from their data. Additional scripts are included to perform nested statistical tests, enabling a more robust and comprehensive analysis.
+This repository contains Python scripts for processing and analyzing photometry data. Designed to streamline data processing, statistical analysis, and visualization, the scripts allow researchers to efficiently gain insights into neural responses associated with specific behaviors. Additional tools are provided for more advanced statistical analyses across complex datasets.
 
 ## Table of Contents
+- [Experiment Description](#experiment-description)
 - [Installation](#installation)
 - [Required Folder Structure](#required-folder-structure)
 - [Key Features](#key-features)
-- [Usage](#usage)
+- [Configuration Settings](#configuration-settings)
+- [Quickstart](#quickstart)
+- [Script Overview](#script-overview)
+    - [Usage](#usage)
+- [Troubleshooting](#troubleshooting)
+
+## Experiment Description
+
+This experiment captures neural activity in response to behavioral stimuli using a fiber photometry setup. The system records two signals:
+- **470 nm**: Experimental signal reflecting neural activity.
+- **410 nm (isosbestic)**: Control signal to correct for motion artifacts.
+
+The workflow aligns these signals with behavioral data, extracting event-specific segments, and performs statistical analyses to explore how neural activity correlates with behaviors like sniffing, grooming, and approaching stimuli.
+
+[***Experiment Schematic***](images/schematic1.png)
 
 ## Installation
 
-To set up the environment for running these photometry data analysis scripts, start by installing the required dependencies. Ensure you have Python installed, then navigate to the repository directory and run:
-
+To set up the environment for running these photometry data analysis scripts, install dependencies by running:
 ```bash
 pip install -r requirements.txt
 ```
 
-This command installs all necessary packages, including:
-- `pandas` (2.0.3) for data manipulation
-- `numpy` (1.24.3) for numerical operations
-- `matplotlib` (3.8.2) and `seaborn` (0.13.2) for data visualization
-- `scipy` (1.11.1) and `statsmodels` (0.14.0) for statistical analysis
-- `PyYAML` (6.0.1) for configuration management
-
-These dependencies are essential for processing, summarizing, and visualizing photometry data and ensuring compatibility across the scripts.
-
 ## Required Folder Structure
 
-For the scripts to function correctly, organize your data files as follows:
-
+Organize your data files as follows to ensure compatibility with the scripts:
 ```
 root/
-¦   
-+---Virgin Females                             # Defined name for analysis group
-    ¦   
-    +---1                                      # Sample ID 1
-    ¦       1_split2022-09-20T14_28_47.CSV     # Photometry File
-    ¦       Raw data-MeP-CRFR2photo_pupblock1-Trial 1 (1).xlsx   # Behavior File
-    ¦       
-    +---21                                     # Sample ID 21
-    ¦       1_split2022-09-28T14_34_01.CSV     # Photometry File
-    ¦       Raw data-Pup Block 2-Trial 1 (2).xlsx                 # Behavior File
-    ¦               
-    +---Archive                                # Folder to store samples you wish to ignore
-    +---Videos                                 # Folder to store acquisition videos
+├── Virgin Females                          # Defined name for the analysis group
+│   ├── 1                                   # Sample ID 1
+│   │   ├── 1_split2022-09-20T14_28_47.CSV  # Photometry data file
+│   │   └── Raw data-MeP-CRFR2photo_pupblock1-Trial 1 (1).xlsx  # Behavior file
+│   ├── 21                                  # Sample ID 21
+│   │   ├── 1_split2022-09-28T14_34_01.CSV  # Photometry data file
+│   │   └── Raw data-Pup Block 2-Trial 1 (2).xlsx  # Behavior file
+├── Archive                                 # Folder for samples to exclude from analysis
+└── Videos                                  # Folder for acquisition videos
 ```
 
-### Folder Details
-- **Group Folder** (e.g., "Virgin Females"): Each analysis group should have its own folder with a descriptive name.
-- **Sample Folders** (e.g., "1", "21"): Within each group, create a subfolder for each sample. Name each folder by the sample ID.
-- **File Naming**:
-  - Place the photometry data file (`.CSV`) and the behavior data file (`.xlsx`) within each sample folder.
-  - The code expects only one `.CSV` and one `.xlsx` file per sample folder to avoid conflicts.
-  - Additional files or folders can exist in the sample folders, but they should not have a `.CSV` or `.xlsx` extension.
+### Folder Descriptions
+- **Group Folder** (e.g., "Virgin Females"): Each analysis group should have its own folder, named descriptively.
+- **Sample Folders** (e.g., "1", "21"): Each sample has its own folder within the group, containing:
+    - A .CSV photometry data file
+    - A .xlsx behavior data file
+    - Optional files should not end in .CSV or .xlsx to avoid conflicts.
 - **Optional Folders**:
-  - **Archive**: Use this folder to store samples you wish to exclude from analysis.
-  - **Videos**: Store acquisition videos here if they’re part of the analysis group.
+    - **Archive**: Store samples to be excluded from analysis.
+    - **Videos**: Store acquisition videos if relevant.
 
 ## Key Features
 
-This repository provides a full suite of tools for processing, summarizing, and visualizing photometry data, with each script designed to facilitate a specific step in the workflow:
+This repository provides tools for photometry data analysis, from event-based signal extraction to advanced statistical visualization. Key scripts include:
 
-- **Event-Based Signal Extraction and Processing**
-  - `batch_photocode_v2.py` extracts specific portions of the photometry signal aligned with the onset of behavioral events, based on time intervals defined in `config.yaml`.
-  - Fits, smooths, and normalizes the photometric signal, providing three trace options for analysis.
-  - Outputs processed signal segments tailored for further statistical analysis, accommodating any number of events with customizable durations.
+- **batch_photocode_v2.py**: Processes photometry data by aligning it with behavioral events.
+- **summarize_values_v2.py**: Generates summarized statistics for the aligned data.
+- **quickplots-stats_v2.py**: Quickly visualizes summarized data with statistical annotations.
 
-- **Comprehensive Summary Statistics**
-  - `summarize_values_v2.py` calculates essential metrics:
-    - Percentage change
-    - Z-scores
+## Configuration Settings
+
+The configuration file (`config.yaml`) in the project root directory manages key analysis parameters. This configuration file is required for batch_photocode, summarize_values, and quickplots-stats.
+
+**Configuration Snippet Example**
+
+```yaml
+start_behavior: "event_start"       # Marks the start of behavioral events to align
+control_behavior: "control_start"   # Defines baseline control events
+baseline_window: 30                 # Specifies baseline time (seconds)
+event_window: 60                    # Specifies event time (seconds)
+```
+
+Use `baseline_window` and `event_window` to adjust how data segments are extracted for baseline and event time frames.
+
+## Quickstart
+
+To quickly test the scripts with default settings, run:
+
+```bash
+python src/batch_photocode_v2.py config.yaml
+```
+
+Replace `batch_photocode_v2.py` with other script names (e.g., `summarize_values_v2.py` or `quickplots-stats_v2.py`) to test other functionalities.
+
+## Script Overview
+### 1. batch_photocode
+
+The `batch_photocode` script processes photometry traces by normalizing and aligning them with behavioral events, enabling precise analysis of neural responses associated with specific behaviors.
+
+- **Experiment Setup**: Fiber photometry records the 470 nm experimental signal and the 410 nm isosbestic control signal. The script removes motion artifacts by normalizing the 470 nm trace to the 410 nm signal.
+
+- **Behavioral Alignment and Data Extraction**: Aligned traces are segmented by behavior (e.g., sniffing, grooming), with each segment saved in folders organized by behavior type. Additionally, alignment images for each event are generated for easy reference.
+
+### 2. summarize_values
+
+The `summarize_values_v2.py` script aggregates trace segments into summary statistics, saving outputs as `.xlsx` files with multiple metrics:
+
+- **Metrics Calculated**:
     - Area under the curve (AUC)
-  - Provides both individual and averaged summaries, offering a thorough quantitative overview.
+    - Percent change
+    - Z-scores and raw means
 
-- **Clear, Annotated Visualizations**
-  - `quickplots-stats_v2.py` generates publication-ready plots with:
-    - Automated metric labels
-    - Statistical annotations to highlight significant findings
-  - Enables easy, intuitive interpretation of complex data.
+This script also applies paired t-tests to compare baseline and event means, annotating significance directly on Z-score figures.
 
-- **Advanced Statistical Analysis**
-  - Additional scripts in the `stats` folder perform complex analyses, including:
-    - **Nested statistical models** (e.g., mixed-effects models with fixed and random effects)
-    - **Multi-comparison tests** for group comparisons
-  - Custom color schemes and data compilation tools enhance flexibility, making it easy to tailor analyses to specific research questions.
+### 3. quickplots-stats
 
-These features together create an efficient, end-to-end workflow for photometry data, from raw processing to in-depth statistical analysis and visual presentation.
+The `quickplots-stats_v2.py` script provides a quick overview of data from `summarize_values` by generating plots with statistical annotations.
+
+- **Examples**:
+    - Paired T-Test Example
+    - One-Sample T-Test Example
+
+### 4. Advanced Statistical Analysis
+
+For experiments involving multiple sessions, `photo_nestedstats.py` and `Compile_wID_v1.py` enable complex statistical analyses. The `photo_nestedstats.py` script supports nested ANOVA and mixed-effects models:
+
+```python
+# Linear mixed model example
+model_formula = 'mean_zF ~ C(Stimulus, Treatment(reference="Reference"))'
+model = smf.mixedlm(model_formula, df_long, groups=df_long['Mouse_ID'])
+result = model.fit()
+```
+
+This script allows detailed comparisons across conditions, using nested ANOVA and Tukey tests to assess statistical significance.
+
+## Usage
+
+To run each main script, use the following commands, specifying `config.yaml` as the configuration file:
+
+```bash
+# Run batch_photocode
+python src/batch_photocode_v2.py config.yaml
+
+# Run summarize_values
+python src/summarize_values_v2.py config.yaml
+
+# Run quickplots-stats
+python src/quickplots-stats_v2.py config.yaml
+```
+
+## Troubleshooting
+
+If you encounter issues, here are some common fixes:
+
+- **Missing Configuration File**: Ensure `config.yaml` is in the project root and contains required parameters. If missing, the script will not execute properly.
+- **Incorrect Folder Structure**: Verify that the folder structure follows the format in the Required Folder Structure section. Misplaced files may cause processing errors.
+- **Dependencies Not Installed**: Run `pip install -r requirements.txt` if you encounter missing library errors.
+- **Output Errors in summarize_values or quickplots-stats**: Check that data from `batch_photocode` has been generated correctly and matches the expected file format.

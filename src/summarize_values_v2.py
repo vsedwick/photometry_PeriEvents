@@ -55,7 +55,8 @@ class EmptyDictionaries:
         }
         self.behavior_list = []
     
-    def load_full_dict(self, dicts, key, value, ids):
+    @staticmethod
+    def load_full_dict(dicts, key, value, ids):
 
         base, event = value
         if "Indv" not in dicts["title"]: #check if exists
@@ -68,7 +69,8 @@ class EmptyDictionaries:
 
         return dicts
     
-    def load_dict_diffs(self, dicts, key, value, ids):
+    @staticmethod
+    def load_dict_diffs( dicts, key, value, ids):
 
         if "Indv" not in dicts["title"]: #check if exists
             dicts[f"Animal ID_{key}"] = list(dict.fromkeys(ids))
@@ -131,10 +133,13 @@ class GrabEventValues:
                                 contents = self._openfile(match)
                                 self.meansof_event.extend(contents[1])
                                 self.meansof_baseline.extend(contents[0])               
-    def _flatten(self, x):
+    @staticmethod
+    def _flatten(x):
         list = [float(i) for ii in x for i in ii]
         return list
-    def _get_id(self, file):
+    
+    @staticmethod
+    def _get_id(file):
         return file.split('_')[-1].split('.')[0]
     
     def _openfile(self, file):
@@ -153,7 +158,8 @@ class ZscorenPlot:
 
         self.save_path = make_folder('zscore_figs', config.subject_path)
 
-    def calculate_values(self, baseline_matrix, event_matrix, length):
+    @staticmethod
+    def calculate_values(baseline_matrix, event_matrix, length):
 
         zscore_diary = []
         try:

@@ -4,7 +4,7 @@
 
 Directory_Information:
   #Parent folder where your data folders are located (It is highly suggested to separate by groups)
-  project_home: /photo_files_for_portfolio/Photometry
+  project_home: "C:/Users/sedwi/Desktop/Portfolio/Thesis_Research (python)/Photometry/example_data"
 
 Acquisition_Information: 
   behaviorvideo_fps: 30
@@ -39,7 +39,7 @@ Behavior_Parameters:
   minimum_accepted_duration_s: 0.1
   #Is a control trial included in your traces? If yes, ensure you have a minimum of 4 start markers, otherwise
   #the control and trial portion will be analyzed together.
-  use_control_trial: yes
+  use_control_trial: no
   #Would you like to limit how many peri-events are extracted per behavior (e.g. if 5, the most prominient 5 'sniffing', 'grooming' etc events will be extracted)? 
   #Useful to prevent oversampling. If no, input 0.
   limit_perievent_extraction: 0

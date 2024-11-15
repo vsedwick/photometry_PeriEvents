@@ -1,5 +1,5 @@
 
-summary_folder = r"C:\Users\sedwi\Documents\Labmeeting_test_files\Mated_females\Summary"
+summary_folder = r"C:\Users\sedwi\Desktop\Portfolio\Thesis_Research (python)\Photometry\example_data\Summary"
 
 import pandas as pd
 import numpy as np
@@ -73,26 +73,27 @@ def restructure_single(sheet):
 
     return {"Values": values, "Behaviors": behavior}
 
-def paired_ttest_bar(new_dict, ylabel, file_path, save_path, sht): #https://seaborn.pydata.org/tutorial/axis_grids.html 
+def paired_ttest_bar(new_dict, ylabel, file_path, save_path, sht): 
     file_name = file_path.split("\\")[-1]
     stage = file_path.split("\\")[-3]
 
     df = pd.DataFrame(new_dict)
-    df.head()
 
     args = dict(x="Placement", y="Values", order=['Baseline', 'Event'], col="Behaviors")
 
-    # Create the grid of plots
+    # Create the grid of plots with adjusted height and aspect for more spacing
     g = sns.catplot(data=df, sharex=False, sharey='col', edgecolor="black", 
                     errcolor="black", errwidth=1.5, capsize=0.1, 
-                    palette=['darkgrey', 'deepskyblue'], height=2, 
-                    col_wrap=5, aspect=1, alpha=0.3, kind="bar", 
+                    palette=['darkgrey', 'deepskyblue'], height=3, 
+                    col_wrap=5, aspect=1.2, alpha=0.3, kind="bar", 
                     ci=68, **args, margin_titles=True)
 
     g.map(sns.stripplot, "Placement", "Values", color='k', alpha=0.7)
     g.set_ylabels(label=ylabel)
     g.set_titles("{col_name}")
-    g.figure.subplots_adjust(top=0.9)
+
+    # Adjust layout to add more space between title and plots
+    g.figure.subplots_adjust(top=0.85, hspace=0.3, wspace=0.3)
 
     # Annotate each subplot with paired t-test results
     for name, ax in g.axes_dict.items():
@@ -103,10 +104,11 @@ def paired_ttest_bar(new_dict, ylabel, file_path, save_path, sht): #https://seab
 
     # Set the figure title and save the whole grid
     name = file_name.split('.')[0]
-    g.figure.suptitle(f'{name}_{sht}')
+    g.figure.suptitle(f'{name}_{sht}', y=1.02)
 
     # Save the full figure, which is the entire grid
     plt.savefig(f"{save_path}\\{name}_{sht}.tif", bbox_inches='tight')
+
 
 
 def one_sample_Tplot(data_new_dict, ylabel, file_path, save_path, sht):
