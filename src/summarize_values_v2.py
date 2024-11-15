@@ -1,5 +1,5 @@
 
-configuration_file = r'../config.yaml'
+configuration_file = r'config.yaml'
 
 
 from batch_photocode_v2 import make_folder, load_config, AnalysisParameters

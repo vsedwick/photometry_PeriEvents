@@ -22,7 +22,7 @@ This experiment captures neural activity in response to behavioral stimuli using
 
 The workflow aligns these signals with behavioral data, extracting event-specific segments, and performs statistical analyses to explore how neural activity correlates with behaviors like sniffing, grooming, and approaching stimuli.
 
-[***Experiment Schematic***](images/schematic1.png)
+![***Experiment Schematic***](images/schematic1.png)
 
 ## Installation
 

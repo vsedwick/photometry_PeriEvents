@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 import sys
 
-project_home = r"C:\Users\sedwi\Downloads\photo_files_for_portfolio\Photometry"
+project_home = r"C:\Users\sedwi\Desktop\Portfolio\Thesis_Research (python)\Photometry\example_data"
 
 def search_and_destroy(keywords, df):
     

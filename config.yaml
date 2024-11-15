@@ -34,7 +34,7 @@ Behavior_Parameters:
   #In the file containing the behavior scores, what row contains your behavior names? 
   #(If the row is not consistent or incorrect, you will be prompted during analysis to provide a new row number)
   behavior_row: 35
-  start_parameter: Event 1
+  start_parameter: Event 5
   #what is the minimal accepted duration? If not applicable, input 0?
   minimum_accepted_duration_s: 0.1
   #Is a control trial included in your traces? If yes, ensure you have a minimum of 4 start markers, otherwise
@@ -46,7 +46,7 @@ Behavior_Parameters:
   
   #Define point events if there are any.
   point_events:
-    - Event 1
+    - Event 5
     - Event 18
     - Event 7
 
@@ -59,29 +59,26 @@ Behavior_Parameters:
     - Event 16
     - Event 17
     - Event 18
-    - Event 19
 
   Compile_behaviors: yes
   Behavior_Groupings:
-  #Ensure these are spelled correctly
-    "Group 1": #Rename to whatever youd like
+  #Ensure these are inputed correctly
+    "Group 1": #Rename to whatever you'd like
       - Event 17
       - Event 16
       - Event 9
       - Event 8
       - Event 6
-      - Event 19
       - 
       - 
       - 
-    "Group 2": #Rename to whatever youd like
+    "Group 2": #Rename to whatever you'd like
       - Event 16
-      - Event 19
       - Event 9
       - Event 6
       - Event 8
       - 
-    "Group 3": #Rename to whatever youd like
+    "Group 3": #Rename to whatever you'd like
       - Event 10
       - Event 15
 
