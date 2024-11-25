@@ -1,5 +1,5 @@
 
-# Photometry Data Analysis and Visualization Repository
+# Photometry Peri-Event Analysis ToolBox
 
 This repository contains Python scripts for processing and analyzing photometry data. Designed to streamline data processing, statistical analysis, and visualization, the scripts allow researchers to efficiently gain insights into neural responses associated with specific behaviors. Additional tools are provided for more advanced statistical analyses across complex datasets.
 
