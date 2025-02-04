@@ -147,7 +147,7 @@ def one_sample_Tplot(data_new_dict, ylabel, file_path, save_path, sht):
     # Set labels and titles
     ax.set_ylabel(ylabel)
     name = file_name.split('.')[0]
-    ax.set_title(f"{name}_{sht}")
+    ax.set_title(f"{name}_{sht}", pad = 20)
     
     # Save the figure
     g.savefig(f"{save_path}/{name}_{sht}.tif")

@@ -6,7 +6,7 @@ Directory_Information:
   #Parent folder where your data folders are located (It is highly suggested to separate by groups)
   project_home: "C:/Users/sedwi/Desktop/Portfolio/Thesis_Research (python)/Photometry/example_data"
 
-Acquisition_Information: 
+Acquisition_Information:
   behaviorvideo_fps: 30
   photometry_fps: 20
   #How many seconds do you want to analyze for peri-events?
@@ -21,7 +21,7 @@ Acquisition_Information:
   #Adjust alignment (if uncertain, keep at 0)
   offset: 0
   #Use a full trace ('yes') or crop around your start parameters ('no')?
-  full_trace: no
+  full_trace:
   #If full trace is 'yes', would you like a minor crop? If no, input 0.
   crop_end: 0
   crop_front: 0
@@ -43,52 +43,53 @@ Behavior_Parameters:
   #Would you like to limit how many peri-events are extracted per behavior (e.g. if 5, the most prominient 5 'sniffing', 'grooming' etc events will be extracted)? 
   #Useful to prevent oversampling. If no, input 0.
   limit_perievent_extraction: 0
-  
+
   #Define point events if there are any.
   point_events:
-    - Event 5
-    - Event 18
-    - Event 7
+  - Event 5
+  - Event 18
+  - Event 7
 
-  Behaviors_to_Score: 
-    - Event 6
-    - Event 8
-    - Event 9
-    - Event 10
-    - Event 15
-    - Event 16
-    - Event 17
-    - Event 18
+  Behaviors_to_Score:
+  - Event 6
+  - Event 8
+  - Event 9
+  - Event 10
+  - Event 15
+  - Event 16
+  - Event 17
+  - Event 18
 
   Compile_behaviors: yes
   Behavior_Groupings:
   #Ensure these are inputed correctly
     "Group 1": #Rename to whatever you'd like
-      - Event 17
-      - Event 16
-      - Event 9
-      - Event 8
-      - Event 6
-      - 
-      - 
-      - 
+    - Event 17
+    - Event 16
+    - Event 9
+    - Event 8
+    - Event 6
+    - 
+    - 
+    - 
     "Group 2": #Rename to whatever you'd like
-      - Event 16
-      - Event 9
-      - Event 6
-      - Event 8
-      - 
+    - Event 16
+    - Event 9
+    - Event 6
+    - Event 8
+    - 
     "Group 3": #Rename to whatever you'd like
-      - Event 10
-      - Event 15
+    - Event 10
+    - Event 15
 
     #Feel free to add custom groupings. Rename and follow the same format.
     "<custom1>":
-      - 
+    - 
     <custom2>:
-      - 
+    - 
   Add_a_zone: no
   Zone: In nest
 
 Plotting_parameters:
   color: magenta
+project_home: E:\Photometry-Fall2022\Final Analysis\Mated Photometry (Males)\10\Pup

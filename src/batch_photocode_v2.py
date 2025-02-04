@@ -1,5 +1,5 @@
 
-configuration_file = r'config.yaml'
+configuration_file = r'C:\Users\sedwi\Desktop\Portfolio\Thesis_Research (python)\Photometry\config.yaml'
 
 # NOTE PROCEED WITH CAUTION CHANGING ANYTHING AFTER THIS LINE
 # MAKE SURE ALL PACKAGES ARE INSTALLED WITH 'pip install [package]'
@@ -667,13 +667,14 @@ class SmoothPlotnValidate_Photo:
         ax[2].plot(photo_frames, self.photo_470)
         ax[2].plot(photo_frames, self.fit3, 'r')
         ax[2].set_title('410 fit over 470')
-        ax[2].set(ylabel='F mean pixels')
+        ax[2].set(ylabel='$\Delta$F/F')
         ax[2].set_xticklabels([])  # Remove x-tick labels
         
         # Bottom plot
         ax[3].plot(photo_frames, trace_in_diary)
         ax[3].set_xlabel('Frame #')  # x-label only on bottom plot
         ax[3].set_title('Smoothed trace')
+        ax[3].set(ylabel='zF')
 
         # Adjust spacing between subplots
         plt.subplots_adjust(hspace=0.5)  # Increase hspace for more vertical space between plots
@@ -1017,7 +1018,7 @@ class ExtractbyEvent:
 
             plt.xticks(fontsize = self.font_size); plt.yticks(fontsize = self.font_size)
 
-            plt.tight_layout()
+            plt.tight_layout(pad = 2)
 
             plt.axvspan(self.photo_time[self.photo_start], self.photo_time[self.photo_end], color = 'palegoldenrod', alpha = 0.2, lw = 0)
             for roi in restructured_frame_onset:

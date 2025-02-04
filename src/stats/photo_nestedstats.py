@@ -3,8 +3,8 @@ import statsmodels.formula.api as smf
 import os
 from statsmodels.stats.multicomp import MultiComparison
 from scipy.stats import ttest_ind
-import functions.photo_nestedstats_funcs as photo
-from functions.photo_nestedstats_funcs import make_folder
+import stats.functions.photo_nestedstats_funcs as photo
+from stats.functions.photo_nestedstats_funcs import make_folder
 
 
 #per trace
