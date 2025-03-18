@@ -235,7 +235,7 @@ class ZscorenPlot:
         plt.close()
 
 def percent_change(baseline, event):
-    return [(y - x)/x * 100 for x, y in zip(baseline, event)]
+    return [(y - x)/abs(x) * 100 for x, y in zip(baseline, event)]
 
 def auc(baseline_matrix, event_matrix):
     
