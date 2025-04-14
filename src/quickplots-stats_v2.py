@@ -1,5 +1,17 @@
+import sys
+from pathlib import Path
 
-summary_folder = r"C:\Users\sedwi\Desktop\Portfolio\Thesis_Research (python)\Photometry\example_data\Summary"
+# Default fallback path (user can hardcode this safely here)
+DEFAULT_SUMMARY_PATH = Path("config.yaml")
+
+# Try to use provided argument, otherwise fall back to default
+if len(sys.argv) > 1:
+    summary_path = Path(sys.argv[1])
+else:
+    summary_path = DEFAULT_SUMMARY_PATH
+
+print(f"Using summary folder: {summary_path}")
+
 
 import pandas as pd
 import numpy as np
@@ -187,8 +199,9 @@ def main(summary_folder):
                                 paired_ttest_bar(new_dict, ylabel, file_path, save_path, sht)
 
     print(f"Plots are saved in {save_path}")
+
 if __name__ == "__main__": 
     if len(sys.argv) > 1:
         main(sys.argv[1])
     else:
-        main(summary_folder)
+        main(DEFAULT_SUMMARY_PATH)
