@@ -1,5 +1,16 @@
+import sys
+from pathlib import Path
 
-configuration_file = r'C:\Users\sedwi\Desktop\Portfolio\Thesis_Research (python)\Photometry\config.yaml'
+# Default fallback path (user can hardcode this safely here)
+DEFAULT_CONFIG_PATH = Path("config.yaml")
+
+# Try to use provided argument, otherwise fall back to default
+if len(sys.argv) > 1:
+    configuration_file = Path(sys.argv[1])
+else:
+    configuration_file = DEFAULT_CONFIG_PATH
+
+print(f"Using summary folder: {configuration_file}")
 
 # NOTE PROCEED WITH CAUTION CHANGING ANYTHING AFTER THIS LINE
 # MAKE SURE ALL PACKAGES ARE INSTALLED WITH 'pip install [package]'
@@ -1196,4 +1207,4 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         main(sys.argv[1])
     else:
-        main(configuration_file)
+        main(DEFAULT_CONFIG_PATH)
