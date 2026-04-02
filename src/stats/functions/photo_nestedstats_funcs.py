@@ -73,10 +73,10 @@ def nested_anova(df_long):
     pd.set_option('display.float_format', lambda x: '%.6f' % x)
     # Step 2: Fit your models
     # Full model with the recoded 'Stimulus' (excluding reference category)
-    full_model = smf.ols('mean_zF ~ C(Stimulus)', data=df_long).fit()
+    full_model = mixedlm('mean_zF ~ C(Stimulus)', data=df_long, groups=df_long['Mouse_ID']).fit()
 
     # Reduced model without 'Stimulus_recode'
-    reduced_model = smf.ols('mean_zF ~ 1', data=df_long).fit()
+    reduced_model = full_model = mixedlm('mean_zF ~ 1'), data=df_long, groups=df_long['Mouse_ID']).fit()
 
     # Step 3: Compare models with anova_lm
     return anova_lm(reduced_model, full_model)
